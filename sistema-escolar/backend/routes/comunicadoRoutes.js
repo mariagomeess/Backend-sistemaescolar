@@ -1,6 +1,7 @@
 const express = require('express');
+const { getComunicados, getComunicadoById, createComunicado, updateComunicado, deleteComunicado } = require('../controllers/comunicadoController');
+const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
-const comunicadoController = require('../controllers/comunicadoController');
 
 /**
  * @swagger
@@ -68,7 +69,7 @@ const comunicadoController = require('../controllers/comunicadoController');
  *               items:
  *                 $ref: '#/components/schemas/Comunicado'
  */
-router.get('/', comunicadoController.getComunicados);
+router.get('/', authMiddleware, getComunicados);
 
 /**
  * @swagger
@@ -93,7 +94,7 @@ router.get('/', comunicadoController.getComunicados);
  *       404:
  *         description: Comunicado não encontrado
  */
-router.get('/:id', comunicadoController.getComunicadoById);
+router.get('/:id', authMiddleware, getComunicadoById);
 
 /**
  * @swagger
@@ -113,7 +114,7 @@ router.get('/:id', comunicadoController.getComunicadoById);
  *       400:
  *         description: Erro nos dados fornecidos
  */
-router.post('/', comunicadoController.createComunicado);
+router.post('/', authMiddleware, createComunicado);
 
 /**
  * @swagger
@@ -140,7 +141,7 @@ router.post('/', comunicadoController.createComunicado);
  *       404:
  *         description: Comunicado não encontrado
  */
-router.put('/:id', comunicadoController.updateComunicado);
+router.put('/:id', authMiddleware, updateComunicado);
 
 /**
  * @swagger
@@ -161,6 +162,7 @@ router.put('/:id', comunicadoController.updateComunicado);
  *       404:
  *         description: Comunicado não encontrado
  */
-router.delete('/:id', comunicadoController.deleteComunicado);
+router.delete('/:id', authMiddleware, deleteComunicado);
 
 module.exports = router;
+

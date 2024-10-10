@@ -1,170 +1,171 @@
 const express = require('express');
+const { createUser, getUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
+const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
-const userController = require('../controllers/userController');
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       required:
- *         - username
- *         - email
- *         - password
- *         - role
- *         - telefone
- *         - cpf
- *       properties:
- *         id:
- *           type: string
- *           description: ID gerado automaticamente para o usuário
- *         username:
- *           type: string
- *           description: Nome de usuário
- *         email:
- *           type: string
- *           description: E-mail do usuário
- *         password:
- *           type: string
- *           description: Senha do usuário
- *         role:
- *           type: string
- *           enum: ['aluno', 'professor', 'coordenador']
- *           description: Função do usuário no sistema
- *         status:
- *           type: string
- *           enum: ['ativo', 'inativo']
- *           description: Status do usuário
- *         telefone:
- *           type: string
- *           description: Número de telefone do usuário
- *         cpf:
- *           type: string
- *           description: CPF do usuário
- *         permissions:
- *           type: array
- *           items:
- *             type: string
- *           description: Permissões adicionais para o usuário
- */
 
 /**
  * @swagger
  * tags:
  *   name: Users
- *   description: Operações relacionadas aos usuários
+ *   description: Operações relacionadas a usuários
  */
 
 /**
  * @swagger
- * /api/users:
+ * /users:
+ *   post:
+ *     summary: Criar um novo usuário
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [aluno, professor, coordenador]
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *       400:
+ *         description: Erro ao criar o usuário
+ */
+router.post('/', authMiddleware,createUser);
+
+/**
+ * @swagger
+ * /users:
  *   get:
- *     summary: Retorna a lista de todos os usuários
+ *     summary: Listar todos os usuários
  *     tags: [Users]
  *     responses:
  *       200:
- *         description: A lista de usuários
+ *         description: Lista de usuários
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                   status:
+ *                     type: string
  */
-router.get('/', userController.getUsers);
+router.get('/', authMiddleware,getUsers);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   get:
- *     summary: Retorna um usuário pelo ID
+ *     summary: Obter um usuário específico
  *     tags: [Users]
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: id
+ *         in: path
  *         required: true
  *         description: ID do usuário
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: Usuário encontrado com sucesso
+ *         description: Usuário encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 status:
+ *                   type: string
  *       404:
  *         description: Usuário não encontrado
  */
-router.get('/:id', userController.getUserById);
+router.get('/:id', authMiddleware,getUserById);
 
 /**
  * @swagger
- * /api/users:
- *   post:
- *     summary: Cria um novo usuário
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
- *     responses:
- *       201:
- *         description: Usuário criado com sucesso
- *       400:
- *         description: Dados inválidos
- */
-router.post('/', userController.createUser);
-
-/**
- * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   put:
- *     summary: Atualiza um usuário existente
+ *     summary: Atualizar um usuário
  *     tags: [Users]
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: id
+ *         in: path
  *         required: true
  *         description: ID do usuário
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [aluno, professor, coordenador]
+ *               status:
+ *                 type: string
+ *                 enum: [ativo, inativo]
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
+ *       400:
+ *         description: Erro ao atualizar o usuário
  *       404:
  *         description: Usuário não encontrado
  */
-router.put('/:id', userController.updateUser);
+router.put('/:id', authMiddleware,updateUser);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   delete:
- *     summary: Remove um usuário pelo ID
+ *     summary: Deletar um usuário
  *     tags: [Users]
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: id
+ *         in: path
  *         required: true
  *         description: ID do usuário
+ *         schema:
+ *           type: string
  *     responses:
- *       200:
- *         description: Usuário removido com sucesso
+ *       204:
+ *         description: Usuário deletado com sucesso
  *       404:
  *         description: Usuário não encontrado
  */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', authMiddleware,deleteUser);
 
 module.exports = router;

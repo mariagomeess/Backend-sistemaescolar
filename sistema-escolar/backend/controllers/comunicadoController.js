@@ -6,7 +6,7 @@ exports.createComunicado = async (req, res) => {
         await comunicado.save();
         res.status(201).json({ message: 'Comunicado criado com sucesso!', comunicado: comunicado });
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).json({ error: 'Erro ao criar comunicado: ' + error.message });
     }
 };
 

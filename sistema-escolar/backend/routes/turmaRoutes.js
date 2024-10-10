@@ -1,161 +1,202 @@
 const express = require('express');
-const router = express.Router();
-const turmaController = require('../controllers/turmaController');
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     Turma:
- *       type: object
- *       required:
- *         - name
- *         - year
- *         - semester
- *         - coordinator
- *       properties:
- *         id:
- *           type: string
- *           description: ID gerado automaticamente para a turma
- *         name:
- *           type: string
- *           description: Nome da turma
- *         year:
- *           type: number
- *           description: Ano letivo
- *         semester:
- *           type: number
- *           description: Semestre letivo
- *         disciplines:
- *           type: string
- *           description: ID da disciplina associada
- *         students:
- *           type: string
- *           description: ID dos alunos associados à turma
- *         teacher:
- *           type: string
- *           description: ID do professor da turma
- *         coordinator:
- *           type: string
- *           description: ID do coordenador da turma
- */
+const {
+    getTurmas,
+    getTurmaById,
+    createTurma,
+    updateTurma,
+    deleteTurma
+  } = require('../controllers/turmaController');
+  const authMiddleware = require('../middleware/authMiddleware');
+  const router = express.Router();
 
 /**
  * @swagger
  * tags:
  *   name: Turmas
- *   description: Operações relacionadas às turmas
+ *   description: Operações relacionadas a turmas
  */
 
 /**
  * @swagger
- * /api/turmas:
+ * /turmas:
+ *   post:
+ *     summary: Criar uma nova turma
+ *     tags: [Turmas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               year:
+ *                 type: number
+ *               semester:
+ *                 type: number
+ *               disciplines_id:
+ *                 type: string
+ *               students_id:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               teacher_id:
+ *                 type: string
+ *               coordinator_id:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Turma criada com sucesso
+ *       400:
+ *         description: Erro ao criar a turma
+ */
+router.post('/', authMiddleware,createTurma);
+
+/**
+ * @swagger
+ * /turmas:
  *   get:
- *     summary: Retorna a lista de todas as turmas
+ *     summary: Listar todas as turmas
  *     tags: [Turmas]
  *     responses:
  *       200:
- *         description: A lista de turmas
+ *         description: Lista de turmas
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Turma'
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   year:
+ *                     type: number
+ *                   semester:
+ *                     type: number
+ *                   disciplines_id:
+ *                     type: string
+ *                   students_id:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                   teacher_id:
+ *                     type: string
+ *                   coordinator_id:
+ *                     type: string
  */
-router.get('/', turmaController.getTurmas);
+router.get('/', authMiddleware,getTurmas);
 
 /**
  * @swagger
- * /api/turmas/{id}:
+ * /turmas/{id}:
  *   get:
- *     summary: Retorna uma turma pelo ID
+ *     summary: Obter uma turma específica
  *     tags: [Turmas]
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: id
+ *         in: path
  *         required: true
  *         description: ID da turma
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: Turma encontrada com sucesso
+ *         description: Turma encontrada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Turma'
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 year:
+ *                   type: number
+ *                 semester:
+ *                   type: number
+ *                 disciplines_id:
+ *                   type: string
+ *                 students_id:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 teacher_id:
+ *                   type: string
+ *                 coordinator_id:
+ *                   type: string
  *       404:
  *         description: Turma não encontrada
  */
-router.get('/:id', turmaController.getTurmaById);
+router.get('/:id', authMiddleware,getTurmaById);
 
 /**
  * @swagger
- * /api/turmas:
- *   post:
- *     summary: Cria uma nova turma
- *     tags: [Turmas]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Turma'
- *     responses:
- *       201:
- *         description: Turma criada com sucesso
- *       400:
- *         description: Dados inválidos
- */
-router.post('/', turmaController.createTurma);
-
-/**
- * @swagger
- * /api/turmas/{id}:
+ * /turmas/{id}:
  *   put:
- *     summary: Atualiza uma turma existente
+ *     summary: Atualizar uma turma
  *     tags: [Turmas]
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: id
+ *         in: path
  *         required: true
  *         description: ID da turma
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Turma'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               year:
+ *                 type: number
+ *               semester:
+ *                 type: number
+ *               disciplines_id:
+ *                 type: string
+ *               students_id:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               teacher_id:
+ *                 type: string
+ *               coordinator_id:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Turma atualizada com sucesso
  *       404:
  *         description: Turma não encontrada
  */
-router.put('/:id', turmaController.updateTurma);
+router.put('/:id', authMiddleware,updateTurma);
 
 /**
  * @swagger
- * /api/turmas/{id}:
+ * /turmas/{id}:
  *   delete:
- *     summary: Remove uma turma pelo ID
+ *     summary: Deletar uma turma
  *     tags: [Turmas]
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: id
+ *         in: path
  *         required: true
  *         description: ID da turma
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: Turma removida com sucesso
+ *         description: Turma deletada com sucesso
  *       404:
  *         description: Turma não encontrada
  */
-router.delete('/:id', turmaController.deleteTurma);
+router.delete('/:id', authMiddleware,deleteTurma);
 
 module.exports = router;

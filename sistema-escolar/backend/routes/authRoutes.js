@@ -4,28 +4,38 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: Auth
- *   description: Gerenciamento de Autenticação
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - username
+ *         - password
+ *         - role
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: Nome do usuário
+ *         password:
+ *           type: string
+ *           description: Senha do usuário
+ *         role:
+ *           type: string
+ *           description: Função do usuário (ex: admin, user)
  */
 
 /**
  * @swagger
- * /api/auth/register:
+ * /register:
  *   post:
  *     summary: Registra um novo usuário
- *     tags: [Auth]
+ *     tags: [Autenticação]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       201:
  *         description: Usuário registrado com sucesso
@@ -36,10 +46,10 @@ router.post('/register', register);
 
 /**
  * @swagger
- * /api/auth/login:
+ * /login:
  *   post:
- *     summary: Realiza login do usuário
- *     tags: [Auth]
+ *     summary: Realiza o login do usuário
+ *     tags: [Autenticação]
  *     requestBody:
  *       required: true
  *       content:
@@ -51,11 +61,16 @@ router.post('/register', register);
  *                 type: string
  *               password:
  *                 type: string
+ *             example:
+ *               username: professor1
+ *               password: 123456
  *     responses:
  *       200:
- *         description: Token JWT gerado
+ *         description: Login bem-sucedido
  *       401:
  *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro no servidor
  */
 router.post('/login', login);
 
