@@ -11,11 +11,12 @@ require('dotenv').config();
 // Carregar variáveis de ambiente do arquivo .env
 dotenv.config();
 
+// Inicializar o aplicativo Express  
+const app = express();
+
 // Conectar ao banco de dados
 connectDB();
 
-// Inicializar o aplicativo Express  
-const app = express();
 
 // Middleware de segurança
 app.use(helmet());
@@ -65,7 +66,7 @@ swaggerSetup(app);
 // });
 
 // Configuração da Porta
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 // Iniciar o servidor
 app.listen(PORT, () => {
