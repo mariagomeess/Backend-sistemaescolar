@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const connectDB = require('./config/database');
+//const connectDB = require('./config/database');
 const swaggerSetup = require('./docs/swagger');
 require('dotenv').config();
 
@@ -15,8 +15,20 @@ dotenv.config();
 const app = express();
 
 // Conectar ao banco de dados
-connectDB();
-
+//connectDB();
+const connectDB = async () => {
+  try {
+    console.log('Connecting to MongoDB with URI:', process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB connected...');
+  } catch (err) {
+    console.error('Error connecting to MongoDB:', err.message);
+    process.exit(1);
+  }
+};
 
 // Middleware de segurança
 app.use(helmet());
